@@ -89,9 +89,10 @@ foreach($variations as $array)
 
 /*
  * Ab hier keinen Bock mehr zu denken. Rest soll der Computer machen... ;-)
- * --- ### BRUTFORCE ### ---
+ * --- ##### BRUTFORCE ##### ---
  */
 
+/*
 $hui = 0;
 
 foreach($variations as $case1)
@@ -124,6 +125,7 @@ foreach($variations as $case1)
 echo 'HEUREKA!<br><br>';
 
 if($final_result) { print_r($final_result); }
+*/
 
 // ---------- Programm ENDE ----------
 
