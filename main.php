@@ -1,15 +1,15 @@
 <?php
 /**
  *  1. Der Bayer arbeitet in der Halle aus dem Baujahr 1955.
- *  2. Der Th�ringer geht gern Fischen.
+ *  2. Der Thüringer geht gern Fischen.
  *  3. Der Berliner arbeitet bei Hochtief.
  *  4. Die 1946 erbaute Halle befindet sich links von der 1958 erbauten Halle.
  *  5. Die Person aus der 1946 erbauten Halle arbeitet bei Bauer.
  *  6. Der Bewehrerspielt gern Volleyball.
  *  7. Die Person aus der 1963 erbauten Halle ist Maurer.
- *  8. Die Person aus der Mittelhalle arbeitet bei Z�blin.
+ *  8. Die Person aus der Mittelhalle arbeitet bei Züblin.
  *  9. Der Hesse arbeitet in der ersten Halle.
- * 10. Der Kranfahrer arbeitet in der Halle neben der Person, die gern Fu�ball spielt.
+ * 10. Der Kranfahrer arbeitet in der Halle neben der Person, die gern Fußball spielt.
  * 11. Die Person die gern Tennis spielt, arbeitet neben dem Maurer.
  * 12. Der Maler arbeitet bei Bilfinger.
  * 13. Der Bremer arbeitet als Polier.
@@ -21,19 +21,19 @@
  */
 
 /*
- * Alle Optionen gem�� Vorgabe
+ * Alle Optionen gemäß Vorgabe
  */
 
-$land = array('Bayer', 'Th�ringer', 'Berliner', 'Hesse', 'Bremer');
+$land = array('Bayer', 'Thüringer', 'Berliner', 'Hesse', 'Bremer');
 $job = array('Maurer', 'Polier', 'Maler', 'Bewehrer', 'Kranfahrer');
-$company = array('Hochtief', 'Bauer', 'Z�blin', 'Bilfinger', 'Strabag');
-$sport = array('Fischen', 'Volleyball', 'Fu�ball', 'Golf', 'Tennis');
+$company = array('Hochtief', 'Bauer', 'Züblin', 'Bilfinger', 'Strabag');
+$sport = array('Fischen', 'Volleyball', 'Fußball', 'Golf', 'Tennis');
 $date = array(1955, 1946, 1958, 1963, 1939);
 $position = array(1, 2, 3, 4, 5);
 
 /*
- * Alle m�glichen Variationen anlegen.
- * Dabei pr�fen wir (is_possible) in jeder Variante, ob diese sich �berhaupt mit den einfachen Angaben vereinbaren l�sst.
+ * Alle möglichen Variationen anlegen.
+ * Dabei prüfen wir (is_possible) in jeder Variante, ob diese sich überhaupt mit den einfachen Angaben vereinbaren lässt.
  */
 
 $variations = array();
@@ -51,7 +51,7 @@ foreach($land as $vland)
                     foreach($position as $vposition)
                     {
                         /*
-                         * Wir speichern nur die Varianten, die gem�� der Angabe m�glich w�ren. Das spart sp�ter ein paar Schleifendurchl�ufe.
+                         * Wir speichern nur die Varianten, die gemÄß der Angabe möglich wären. Das spart später ein paar Schleifendurchläufe.
                          */
 
                         if(is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition))
@@ -72,11 +72,12 @@ foreach($land as $vland)
     }
 }
 
-// In $variations sind nun alle m�glichen Kombinationen, welche die Angabe nach den offensichtlichen und fixen Bedingungen theoretisch noch zul�sst.
-// Damit sind die Bedingungen 1, 2, 3, 5, 6, 7, 8, 9, 12 und 13 erf�llt, und die 4, 10, 11, 14, 15 und 16 teilweise erf�llt.
+// In $variations sind nun alle möglichen Kombinationen, welche die Angabe nach den offensichtlichen und fixen Bedingungen theoretisch noch zulässt.
+// Damit sind die Bedingungen 1, 2, 3, 5, 6, 7, 8, 9, 12 und 13 erfüllt, und die 4, 10, 11, 14, 15 und 16 teilweise erfüllt.
 
 $variations = rest($variations);
 
+/*
 echo 'Verbleibend: ' . count($variations) . '<br><br>';
 
 foreach($variations as $array)
@@ -84,13 +85,47 @@ foreach($variations as $array)
     print_r($array);
     echo '<br><br>';
 }
+*/
+
+/*
+ * Ab hier keinen Bock mehr zu denken. Rest soll der Computer machen... ;-)
+ * --- ### BRUTFORCE ### ---
+ */
+
+foreach($variations as $case1)
+{
+    foreach($variations as $case2)
+    {
+        foreach($variations as $case3)
+        {
+            foreach($variations as $case4)
+            {
+                foreach($variations as $case5)
+                {
+                    $totest = array();
+                    $totest[] = $case1;
+                    $totest[] = $case2;
+                    $totest[] = $case3;
+                    $totest[] = $case4;
+                    $totest[] = $case5;
+
+                    if(is_match($totest)) { $final_result = $totest; break; }
+                }
+            }
+        }
+    }
+}
+
+echo 'HEUREKA!<br><br>';
+
+if($final_result) { print_r($final_result); }
 
 // ---------- Programm ENDE ----------
 
 // ---------- FUNKTIONEN: ----------
 
 /*
- * Unser Test gegen die einfachen Bedingungen, gegen die wir schon w�hrend des Aufbaus der Variationen testen.
+ * Unser Test gegen die einfachen Bedingungen, gegen die wir schon während des Aufbaus der Variationen testen.
  */
 
 function is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition)
@@ -98,8 +133,8 @@ function is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition)
     // 1. Der Bayer arbeitet in der Halle aus dem Baujahr 1955.
     if(($vland == 'Bayer' && $vdate != 1955) || ($vdate == 1955 && $vland != 'Bayer')) { return FALSE; }
 
-    // 2. Der Th�ringer geht gern Fischen.
-    elseif(($vland == 'Th�ringer' && $vsport != 'Fischen') || ($vsport == 'Fischen' && $vland != 'Th�ringer')) { return FALSE; }
+    // 2. Der Thüringer geht gern Fischen.
+    elseif(($vland == 'Thüringer' && $vsport != 'Fischen') || ($vsport == 'Fischen' && $vland != 'Thüringer')) { return FALSE; }
 
     // 3. Der Berliner arbeitet bei Hochtief.
     elseif(($vland == 'Berliner' && $vcompany != 'Hochtief') || ($vcompany == 'Hochtief' && $vland != 'Berliner')) { return FALSE; }
@@ -118,15 +153,15 @@ function is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition)
     // 7. Die Person aus der 1963 erbauten Halle ist Maurer.
     elseif(($vdate == 1963 && $vjob != 'Maurer') || ($vjob == 'Maurer' && $vdate != 1963)) { return FALSE; }
 
-    // 8.Die Person aus der Mittelhalle arbeitet bei Z�blin.
-    elseif(($vposition == 3 && $vcompany != 'Z�blin') || ($vcompany == 'Z�blin' && $vposition != 3))  { return FALSE; }
+    // 8.Die Person aus der Mittelhalle arbeitet bei Züblin.
+    elseif(($vposition == 3 && $vcompany != 'Züblin') || ($vcompany == 'Züblin' && $vposition != 3))  { return FALSE; }
 
     // 9.Der Hesse arbeitet in der ersten Halle.
     elseif(($vland == 'Hesse' && $vposition != 1) || ($vposition == 1 && $vland != 'Hesse')) { return FALSE; }
 
-    // 10. Der Kranfahrer arbeitet in der Halle neben der Person, die gern Fu�ball spielt.
-	// Teilweise: Der Kranfahrer spielt nicht Fu�ball.
-    elseif($vjob == 'Kranfahrer' && $vsport == 'Fu�ball') { return FALSE; }
+    // 10. Der Kranfahrer arbeitet in der Halle neben der Person, die gern Fußball spielt.
+	// Teilweise: Der Kranfahrer spielt nicht Fußball.
+    elseif($vjob == 'Kranfahrer' && $vsport == 'Fußball') { return FALSE; }
 
     // 11. Die Person die gern Tennis spielt, arbeitet neben dem Maurer.
 	// Teilweise: Der Tennisspieler ist nicht Maurer.
@@ -200,4 +235,17 @@ function rest($variations)
     }
 	
 	return $variations;
+}
+
+/*
+ * Prüft ob eine übergebene Matrix nur aus uniquen Werten besteht
+ */
+
+function is_match($totest)
+{
+    // Alle Werte der Matrix in einen Array schreiben
+    $values = implode(',', call_user_func_array('array_merge', $totest));
+    // Prüfen ob es bei den Werten Duplikate gibt
+    if(count($values) !== count(array_unique($values))) { return FALSE; }
+    else {return TRUE; }
 }
