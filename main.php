@@ -92,6 +92,8 @@ foreach($variations as $array)
  * --- ### BRUTFORCE ### ---
  */
 
+$hui = 0;
+
 foreach($variations as $case1)
 {
     foreach($variations as $case2)
@@ -108,6 +110,9 @@ foreach($variations as $case1)
                     $totest[] = $case3;
                     $totest[] = $case4;
                     $totest[] = $case5;
+
+                    $hui++;
+                    echo $hui . '<br>';
 
                     if(is_match($totest)) { $final_result = $totest; break; }
                 }
@@ -244,7 +249,12 @@ function rest($variations)
 function is_match($totest)
 {
     // Alle Werte der Matrix in einen Array schreiben
-    $values = implode(',', call_user_func_array('array_merge', $totest));
+    $values = array();
+    foreach($totest as $row)
+    {
+        $values = array_merge($values, array_values($row));
+    }
+
     // Prüfen ob es bei den Werten Duplikate gibt
     if(count($values) !== count(array_unique($values))) { return FALSE; }
     else {return TRUE; }
