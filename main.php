@@ -77,7 +77,6 @@ foreach($land as $vland)
 
 $variations = rest($variations);
 
-/*
 echo 'Verbleibend: ' . count($variations) . '<br><br>';
 
 foreach($variations as $array)
@@ -85,7 +84,6 @@ foreach($variations as $array)
     print_r($array);
     echo '<br><br>';
 }
-*/
 
 /*
  * Ab hier keinen Bock mehr zu denken. Rest soll der Computer machen... ;-)
@@ -154,7 +152,7 @@ function is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition)
     // 5.Die Person aus der 1946 erbauten Halle arbeitet bei Bauer.
     elseif(($vdate == 1946 && $vcompany != 'Bauer') || ($vcompany == 'Bauer' && $vdate != 1946)) { return FALSE; }
 
-    // 6. Der Bewehrerspielt gern Volleyball.
+    // 6. Der Bewehrer spielt gern Volleyball.
     elseif(($vjob == 'Bewehrer' && $vsport != 'Volleyball') || ($vsport == 'Volleyball' && $vjob != 'Bewehrer')) { return FALSE; }
 
     // 7. Die Person aus der 1963 erbauten Halle ist Maurer.
@@ -198,7 +196,7 @@ function is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition)
 	// Also muss Halle 1939 auf Position 2 stehen
 	elseif(($vdate == 1939 && $vposition != 2) || ($vposition == 2 && $vdate != 1939))  { return FALSE; }
 
-    // Ansonsten ist die Variante dieser Schleife  m�glich
+    // Ansonsten ist die Variante dieser Schleife  möglich
     else { return TRUE; }
 }
 
@@ -240,6 +238,8 @@ function rest($variations)
             }
         }
     }
+
+    
 	
 	return $variations;
 }
