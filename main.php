@@ -51,7 +51,7 @@ foreach($land as $vland)
                     foreach($position as $vposition)
                     {
                         /*
-                         * Wir speichern nur die Varianten, die gemÄß der Angabe möglich wären. Das spart später ein paar Schleifendurchläufe.
+                         * Wir speichern nur die Varianten, die gemäß der Angabe möglich wären. Das spart später ein paar Schleifendurchläufe.
                          */
 
                         if(is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition))
@@ -76,6 +76,8 @@ foreach($land as $vland)
 // Damit sind die Bedingungen 1, 2, 3, 5, 6, 7, 8, 9, 12 und 13 erfüllt, und die 4, 10, 11, 14, 15 und 16 teilweise erfüllt.
 
 $variations = rest($variations);
+
+$variations = filtered($variations);
 
 echo 'Verbleibend: ' . count($variations) . '<br><br>';
 
@@ -188,7 +190,8 @@ function is_possible($vland, $vjob, $vcompany, $vsport, $vdate, $vposition)
 
     // 16. Der Maler arbeitet neben dem Bayer.
 	// Teilweise: Der Maler ist kein Bayer.
-    elseif($vjob == 'Maler' && $vland == 'Bayer')  { return FALSE; }
+    // Auskommentiert weil wohl absichtlich falsche Angabe
+    // elseif($vjob == 'Maler' && $vland == 'Bayer')  { return FALSE; }
 	
 	// 9 und 14 kombiniert
 	// 9. Der Hesse arbeitet in der ersten Halle.
@@ -239,9 +242,105 @@ function rest($variations)
         }
     }
 
-    
-	
+    // Nachbarschaftsverhältnisse
+
+    // 10. Der Kranfahrer arbeitet in der Halle neben der Person, die gern Fußball spielt.
+    $variations = unset_no_naighbors($variations, array('job' => 'Kranfahrer', 'sport' => 'Fußball'));
+
+    // 11. Die Person die gern Tennis spielt, arbeitet neben dem Maurer.
+    $variations = unset_no_naighbors($variations, array('sport' => 'Tennis', 'job' => 'Maurer'));
+
+    // 14. Der Hesse arbeitet neben der 1939 erbauten Halle.
+    $variations = unset_no_naighbors($variations, array('land' => 'Hesse', 'date' => 1939));
+
+    // 15. Der Kranfahrer arbeitet neben der Person die bei Strabag arbeitet.
+    $variations = unset_no_naighbors($variations, array('job' => 'Kranfahrer', 'company' => 'Strabag'));
+
 	return $variations;
+}
+
+function filtered($rows)
+{
+    $filtered = array();
+    foreach($rows as $index => $columns)
+    {
+        foreach($columns as $key => $value)
+        {
+            if($key == 'land' && $value == 'Bayer')
+            {
+                $filtered[] = $columns;
+            }
+        }
+    }
+
+    return $filtered;
+}
+
+
+
+function unset_no_naighbors($variations, $args)
+{
+    $search_keys = array_keys($args);
+
+    $first_key = $search_keys[0];
+    $first_value = $args[$search_keys[0]];
+
+    $second_key = $search_keys[1];
+    $second_value = $args[$search_keys[1]];
+
+    $first_pos = array();
+    $second_pos = array();
+
+    foreach($variations as $key => $array)
+    {
+        if($array[$first_key] == $first_value)
+        {
+            $first_pos[$key] = $array['position'];
+        }
+        elseif($array[$second_key] == $second_value)
+        {
+            $second_pos[$key] = $array['position'];
+        }
+    }
+
+    if(!empty($first_pos) && !empty($second_pos))
+    {
+        $to_delete_first = find_unpossible($first_pos, $second_pos);
+        $to_delete_second = find_unpossible($second_pos, $first_pos);
+
+        foreach($variations as $key => $array)
+        {
+
+            if(($array[$first_key] == $first_value) && in_array($array['position'], $to_delete_first))
+            {
+                unset($variations[$key]);
+            }
+
+            if(($array[$second_key] == $second_value) && in_array($array['position'], $to_delete_second))
+            {
+                unset($variations[$key]);
+            }
+        }
+    }
+
+    return $variations;
+}
+
+/*
+ * Nimmt zwei Arrays von Positionen entgegen und returned die Positionen aus $first_pos welche sich nicht in einem Nabarschaftsverhältnis zu $second_pos befinden können
+ */
+
+function find_unpossible($first_pos, $second_pos)
+{
+    $pos_to_delete = array();
+
+    if(in_array(1, $first_pos) && !in_array(2, $second_pos)) { $pos_to_delete[] = 1; }
+    if(in_array(2, $first_pos) && !in_array(1, $second_pos) && !in_array(3, $second_pos)) { $pos_to_delete[] = 2; }
+    if(in_array(3, $first_pos) && !in_array(2, $second_pos) && !in_array(4, $second_pos)) { $pos_to_delete[] = 3; }
+    if(in_array(4, $first_pos) && !in_array(3, $second_pos) && !in_array(5, $second_pos)) { $pos_to_delete[] = 4; }
+    if(in_array(5, $first_pos) && !in_array(4, $second_pos)) { $pos_to_delete[] = 5; }
+
+    return $pos_to_delete;
 }
 
 /*
@@ -259,5 +358,5 @@ function is_match($totest)
 
     // Prüfen ob es bei den Werten Duplikate gibt
     if(count($values) !== count(array_unique($values))) { return FALSE; }
-    else {return TRUE; }
+    else { return TRUE; }
 }
